@@ -37,19 +37,19 @@ button{font:inherit;color:inherit}
 ::selection{background:var(--red);color:#fff}
 
 /* ── 阶段一：Logo 前奏（仿视频：黑场火种 → 迸裂碎片 → 辉光水印浮现；独立层 z-index 严格分离） ── */
-#logoPrelude{position:fixed;inset:0;z-index:100;background:#0a0a0a;display:flex;align-items:center;justify-content:center;perspective:1200px;overflow:hidden;transition:opacity .5s var(--ease),transform .5s var(--ease)}
+#logoPrelude{position:fixed;inset:0;z-index:100;background:#0a0a0a;display:flex;align-items:center;justify-content:center;perspective:1200px;overflow:hidden;transition:opacity calc(var(--ts,1)*.8s) var(--ease),transform calc(var(--ts,1)*.8s) var(--ease)}
 #logoPrelude.out{opacity:0;transform:translateY(-3%)}
 #logoPrelude.gone{display:none}
-#logoPrelude .ember{position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:#fff;box-shadow:0 0 14px 5px rgba(230,57,70,.95),0 0 46px 20px rgba(230,57,70,.55),0 0 110px 58px rgba(230,57,70,.26);animation:emberIn .85s var(--ease) both;transition:opacity .45s var(--ease),transform .45s var(--ease)}
+#logoPrelude .ember{position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:#fff;box-shadow:0 0 14px 5px rgba(230,57,70,.95),0 0 46px 20px rgba(230,57,70,.55),0 0 110px 58px rgba(230,57,70,.26);animation:emberIn calc(var(--ts,1)*.85s) var(--ease) both;transition:opacity calc(var(--ts,1)*.45s) var(--ease),transform calc(var(--ts,1)*.45s) var(--ease)}
 @keyframes emberIn{0%{transform:scale(0);opacity:0}55%{transform:scale(1.6);opacity:1}100%{transform:scale(1);opacity:1}}
 #logoPrelude.bloom .ember{opacity:0;transform:scale(.15)}
 #logoPrelude .shards{position:absolute;inset:0;pointer-events:none}
 #logoPrelude .shards span{position:absolute;left:50%;top:50%;width:3px;height:22px;margin:-11px 0 0 -1.5px;border-radius:2px;background:#fff;box-shadow:0 0 10px 3px rgba(230,57,70,.85);opacity:0;will-change:transform,opacity}
 #logoPrelude .shards span.tri{width:16px;height:16px;margin:-8px 0 0 -8px;background:#e63946;box-shadow:0 0 12px 4px rgba(230,57,70,.7);clip-path:polygon(50% 0,100% 100%,0 100%)}
-#logoPrelude .wm-outer{position:relative;opacity:0;transform:scale(.72);transition:opacity .8s var(--ease),transform .95s var(--ease)}
+#logoPrelude .wm-outer{position:relative;opacity:0;transform:scale(.72);transition:opacity calc(var(--ts,1)*.8s) var(--ease),transform calc(var(--ts,1)*.95s) var(--ease)}
 #logoPrelude.bloom .wm-outer{opacity:1;transform:scale(1)}
-#logoPrelude .wm-shine{position:absolute;inset:-10%;background:linear-gradient(120deg,transparent 42%,rgba(230,57,70,.16) 50%,transparent 58%);animation:shine 2.6s var(--ease) infinite;pointer-events:none}
-#logoPrelude .wm-stack{position:relative;transform-style:preserve-3d;animation:wmSpin 16s linear infinite}
+#logoPrelude .wm-shine{position:absolute;inset:-10%;background:linear-gradient(120deg,transparent 42%,rgba(230,57,70,.16) 50%,transparent 58%);animation:shine calc(var(--ts,1)*2.6s) var(--ease) infinite;pointer-events:none}
+#logoPrelude .wm-stack{position:relative;transform-style:preserve-3d;animation:wmSpin calc(var(--ts,1)*16s) linear infinite}
 #logoPrelude .wm-stack span{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);white-space:nowrap;font-weight:900;font-size:clamp(52px,18vw,180px);letter-spacing:-.04em;text-transform:uppercase;color:#fff;font-family:var(--sys);backface-visibility:hidden}
 #logoPrelude .wm-stack span:nth-child(1){transform:translate(-50%,-50%) translateZ(0px);text-shadow:0 0 18px rgba(230,57,70,.9),0 0 52px rgba(230,57,70,.55),0 0 110px rgba(230,57,70,.3)}
 #logoPrelude .wm-stack span:nth-child(2){transform:translate(-50%,-50%) translateZ(-3px);color:rgba(255,255,255,.92)}
@@ -63,7 +63,7 @@ button{font:inherit;color:inherit}
 @keyframes shine{0%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
 
 /* ── 阶段二 + 三：主开场（Logo 完全退场后才播放，白底黑字瑞士风） ── */
-#intro{position:fixed;inset:0;z-index:1000;background:var(--paper);display:none;flex-direction:column;align-items:center;justify-content:center;gap:clamp(18px,4vw,28px);padding:env(safe-area-inset);opacity:0;transition:transform 1.1s var(--ease),opacity .7s var(--ease)}
+#intro{position:fixed;inset:0;z-index:1000;background:var(--paper);display:none;flex-direction:column;align-items:center;justify-content:center;gap:clamp(18px,4vw,28px);padding:env(safe-area-inset);opacity:0;transition:transform calc(var(--ts,1)*1.1s) var(--ease),opacity calc(var(--ts,1)*.7s) var(--ease)}
 #intro.show{opacity:1}
 #intro.out{transform:scale(1.06);opacity:0;pointer-events:none}
 .pre-meta{text-align:center}
@@ -76,9 +76,26 @@ button{font:inherit;color:inherit}
 .cnt span{display:block;margin-top:6px;font:500 9px/1.5 var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3)}
 .cnt .u{color:var(--red)}
 .pre-hint{font:500 9.5px/1 var(--mono);letter-spacing:.26em;text-transform:uppercase;color:var(--ink-3);display:flex;align-items:center;gap:12px;min-height:44px}
-.pre-hint i{display:block;width:1px;height:16px;background:var(--ink);animation:bd 1.4s var(--ease) infinite}
+.pre-hint i{display:block;width:1px;height:16px;background:var(--ink);animation:bd calc(var(--ts,1)*1.4s) var(--ease) infinite}
 @keyframes bd{0%,100%{transform:scaleY(1);opacity:1}50%{transform:scaleY(.3);opacity:.4}}
 .pre-bar{position:absolute;bottom:0;left:0;height:5px;width:0;background:var(--red)}
+
+/* 阶段三分步入场（时间轴驱动：s1 标题 → s2 副题 → s3 数字条，间隔 ≥0.3s） */
+#intro .pre-name,#intro .pre-sub,#intro .pre-counts,#intro .pre-hint{opacity:0;transform:translateY(16px);
+  transition:opacity calc(var(--ts,1)*.8s) var(--ease),transform calc(var(--ts,1)*.8s) var(--ease)}
+#intro.s1 .pre-name{opacity:1;transform:none}
+#intro.s2 .pre-sub{opacity:1;transform:none}
+#intro.s3 .pre-counts,#intro.s3 .pre-hint{opacity:1;transform:none}
+
+/* 右下角「跳过」按钮（开场期间可见，半透明胶囊，明暗底都清晰） */
+#skipBtn{position:fixed;right:16px;bottom:calc(74px + env(safe-area-inset-bottom));z-index:2000;display:none;
+  align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1px solid rgba(255,255,255,.42);
+  background:rgba(10,10,10,.42);color:#fff;font:600 11px/1 var(--mono);letter-spacing:.22em;text-transform:uppercase;
+  cursor:pointer;opacity:.85;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  -webkit-tap-highlight-color:transparent;transition:transform .3s var(--ease),opacity .3s var(--ease),background .3s var(--ease)}
+#skipBtn:active{transform:scale(.93);opacity:1}
+body.intro-lock #skipBtn{display:flex}
+#skipBtn.ff{background:rgba(230,57,70,.6);border-color:transparent}
 
 /* ── 顶部极简栏（进场后显示，非菜单） ── */
 .rail{position:fixed;top:44px;left:0;right:0;z-index:800;display:flex;justify-content:space-between;gap:12px;padding:calc(env(safe-area-inset-top) + 10px) var(--pad) 10px;font:500 9.5px/1.4 var(--mono);letter-spacing:.16em;text-transform:uppercase;background:rgba(255,255,255,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);transform:translateY(-101%);transition:transform .6s var(--ease)}
@@ -475,7 +492,7 @@ section[id],footer[id]{scroll-margin-top:56px}
   .reveal{opacity:1;transform:none}
   .identity-copy>*{opacity:1;transform:none}
   .phil-item h3,.phil-item .en,.closing-line,.outro-h2{opacity:1;transform:none}
-  #logoPrelude,#intro{display:none!important}
+  #logoPrelude,#intro,#skipBtn{display:none!important}
 }
 </style>
 </head>
@@ -530,9 +547,12 @@ section[id],footer[id]{scroll-margin-top:56px}
     <div class="cnt"><b><span data-count="2">0</span><span class="u">×</span></b><span>认证 / 同一天考完</span></div>
     <div class="cnt"><b><span data-count="100">0</span><span class="u">%</span></b><span>向前走</span></div>
   </div>
-  <div class="pre-hint"><i></i>点击 / 上滑 进入</div>
+  <div class="pre-hint"><i></i>戴好耳机 · 右下角可跳过</div>
   <div class="pre-bar" id="preBar"></div>
 </div>
+
+<!-- 开场「跳过」：<70% 点 = 4 倍速播完；≥70% 点 = 直接淡出进主界面 -->
+<button id="skipBtn" type="button" aria-label="跳过开场动画">跳过<span>Skip</span></button>
 
 <main>
 
@@ -909,11 +929,17 @@ var ASSETS = {avatar:"data:image/webp;base64,UklGRlKUAABXRUJQVlA4IEaUAAAQpgKdASr
   if(pref !== '0') doPlay();
 })();
 
-/* ── 2. 开场编排：阶段一 Logo 前奏 → 退场 → 阶段二/三 主开场（严格时序） ──
-   等价 GSAP Timeline 的 vanilla 实现：stage2 必须在 stage1 结束后才开始 */
+/* ── 2. 开场编排：GSAP Timeline 等价（虚拟时钟 + timeScale + 跳过按钮） ──
+   时间轴（总长 ~8.05s）：
+   阶段一 0~0.75s 火种 → 0.75s 起水印淡入 0.8s → 静止 1.5s → 3.05s 起淡出 0.8s
+   阶段二 3.90s Logo 从 DOM 移除（不留视觉残留）
+   阶段三 3.90~8s 主开场：标题 0.8s → +0.45s 副题 → +0.45s 数字滚动 1.8s → 7.3s 退场
+   右下角「跳过」：<70% 点 = 4 倍速播完（timeScale(4) 等价）；≥70% 或快进中再点 = 淡出进主界面
+   点屏幕其他地方不响应，保证动画完整呈现 */
 (function(){
   var prelude = document.getElementById('logoPrelude');
   var intro   = document.getElementById('intro');
+  var skipBtn = document.getElementById('skipBtn');
   var bar     = document.getElementById('preBar');
   if(!intro) return;
 
@@ -926,41 +952,68 @@ var ASSETS = {avatar:"data:image/webp;base64,UklGRlKUAABXRUJQVlA4IEaUAAAQpgKdASr
     return;
   }
 
-  var skipped = false;   // 是否已快进到结束
-  var logoTimer = null;
+  var TOTAL = 8.05;                 // 时间轴总长（秒）
+  var vt = 0;                       // 虚拟时间（受 speed 缩放，等价 GSAP timeScale）
+  var speed = 1;                    // 1 = 原速；跳过后 = 4
+  var last = null, finished = false;
+  var steps = [];
+  function at(t, fn){ steps.push({t:t, fn:fn, done:false}); }
+  function setTs(v){ document.documentElement.style.setProperty('--ts', v); }   // CSS 时长同步缩放
 
-  /* 阶段二/三：主开场（Logo 退场后才被调用） */
-  function startIntro(){
-    if(intro.dataset.started) return;
-    intro.dataset.started = '1';
-    intro.style.display = 'flex';
-    void intro.offsetWidth;          // 强制回流，确保过渡触发
-    intro.classList.add('show');
+  var nodes = [].slice.call(intro.querySelectorAll('[data-count]'));
 
-    var nodes = [].slice.call(intro.querySelectorAll('[data-count]'));
-    var DUR = 2000, t0 = null, done = false;
-
-    requestAnimationFrame(function step(ts){
-      if(t0 === null) t0 = ts;
-      var p = Math.min((ts - t0) / DUR, 1);
-      var e = p < .5 ? 2*p*p : 1 - Math.pow(-2*p + 2, 2)/2;
-      for(var i=0;i<nodes.length;i++) nodes[i].textContent = Math.round(nodes[i].dataset.count * e);
-      if(bar) bar.style.width = (e*100) + '%';
-      if(p < 1) requestAnimationFrame(step); else setTimeout(leave, 300);
-    });
-
-    function leave(){
-      if(done) return; done = true;
-      intro.classList.add('out');
-      document.body.classList.remove('intro-lock');
-      document.body.classList.add('loaded');
-      setTimeout(function(){ intro.style.display = 'none'; }, 1200);
-    }
-    intro.addEventListener('click', leave);
-    addEventListener('wheel', leave, {once:true, passive:true});
-    addEventListener('touchmove', leave, {once:true, passive:true});
-    addEventListener('keydown', leave, {once:true});
+  /* 结束：淡出进主界面（自然播完 / ≥70% 点击 / 快进中再点，共用） */
+  function finishNow(){
+    if(finished) return; finished = true;
+    setTs(1);
+    if(prelude) prelude.classList.add('out', 'gone');
+    intro.classList.add('out');
+    document.body.classList.remove('intro-lock');
+    document.body.classList.add('loaded');
+    setTimeout(function(){ intro.style.display = 'none'; }, 800);
   }
+
+  /* 跳过按钮：<70% → 4 倍速播完；≥70% 或已在快进 → 直接淡出 */
+  function skipAction(){
+    if(finished) return;
+    if(vt / TOTAL >= 0.7 || speed > 1){ finishNow(); return; }
+    speed = 4; setTs(.25);
+    if(skipBtn) skipBtn.classList.add('ff');
+  }
+  if(skipBtn) skipBtn.addEventListener('click', function(e){ e.stopPropagation(); skipAction(); });
+  addEventListener('keydown', function(e){ if(e.key === 'Escape') skipAction(); });
+
+  /* —— 时间轴编排 —— */
+  at(0.75, function(){ if(prelude){ prelude.classList.add('bloom'); spawnShards(); } });
+  at(3.05, function(){ if(prelude) prelude.classList.add('out'); });   // Logo 淡出 0.8s
+  at(3.90, function(){                                                 // 阶段二：Logo 移除，主开场启动
+    if(prelude) prelude.style.display = 'none';
+    intro.style.display = 'flex';
+    void intro.offsetWidth;
+    intro.classList.add('show');
+    intro.classList.add('s1');                                         // 标题淡入 0.8s
+  });
+  at(4.35, function(){ intro.classList.add('s2'); });                  // +0.45s 副题入场
+  at(4.80, function(){ intro.classList.add('s3'); });                  // +0.45s 数字条入场
+  at(7.30, function(){ intro.classList.add('out'); });                 // 主开场退场
+  at(TOTAL, function(){ finishNow(); });
+
+  function frame(ts){
+    if(finished) return;
+    if(last === null) last = ts;
+    vt += Math.min(ts - last, 120) * speed / 1000;   // 后台切回的大间隔钳制
+    last = ts;
+    for(var i = 0; i < steps.length; i++){
+      var st = steps[i];
+      if(!st.done && vt >= st.t){ st.done = true; st.fn(); }
+    }
+    var p = Math.min(Math.max((vt - 4.80) / 1.8, 0), 1);   // 数字滚动 4.80~6.60s
+    var e = p < .5 ? 2*p*p : 1 - Math.pow(-2*p + 2, 2) / 2;
+    for(var j = 0; j < nodes.length; j++) nodes[j].textContent = Math.round(nodes[j].dataset.count * e);
+    if(bar) bar.style.width = (Math.min(Math.max((vt - 3.90) / 3.40, 0), 1) * 100) + '%';
+    if(!finished) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
 
   /* 迸裂碎片：从中心向外飞散的辉光线条 + 三角碎片（仿视频火种绽开） */
   function spawnShards(){
@@ -977,7 +1030,7 @@ var ASSETS = {avatar:"data:image/webp;base64,UklGRlKUAABXRUJQVlA4IEaUAAAQpgKdASr
         s.style.transform = 'rotate(' + baseRot.toFixed(1) + 'deg)';
         box.appendChild(s);
         requestAnimationFrame(function(){ requestAnimationFrame(function(){
-          s.style.transition = 'transform 1s cubic-bezier(.16,1,.3,1), opacity 1s ease-out';
+          s.style.transition = 'transform calc(var(--ts,1)*1s) cubic-bezier(.16,1,.3,1), opacity calc(var(--ts,1)*1s) ease-out';
           s.style.opacity = '1';
           s.style.transform = 'translate(' + (Math.cos(a)*d).toFixed(1) + 'px,' +
             (Math.sin(a)*d).toFixed(1) + 'px) rotate(' + (baseRot + rz).toFixed(1) + 'deg) scale(.4)';
@@ -986,43 +1039,6 @@ var ASSETS = {avatar:"data:image/webp;base64,UklGRlKUAABXRUJQVlA4IEaUAAAQpgKdASr
       })();
     }
   }
-
-  /* 阶段一：Logo 前奏 0~2s（火种 0.75s 后迸裂 + 水印浮现），然后 0.5s 淡出，完全消失后启动主开场 */
-  function preludePhase(){
-    if(skipped) return;
-    setTimeout(function(){
-      if(skipped) return;
-      prelude.classList.add('bloom');
-      spawnShards();
-    }, 750);
-    logoTimer = setTimeout(function(){
-      if(skipped) return;
-      prelude.classList.add('out');
-      setTimeout(function(){
-        if(skipped) return;
-        prelude.style.display = 'none';   // 容器移除，不占任何层级
-        startIntro();                     // 阶段二在阶段一结束后才开始
-      }, 500);
-    }, 2000);
-  }
-
-  /* 点击/滚动/触摸/按键：Logo 与主开场同时快进至结束状态 */
-  function skip(){
-    if(skipped) return; skipped = true;
-    if(logoTimer) clearTimeout(logoTimer);
-    if(prelude){ prelude.classList.add('out'); prelude.style.display = 'none'; }
-    startIntro();
-    document.body.classList.remove('intro-lock');
-    document.body.classList.add('loaded');
-    intro.classList.add('out');
-    setTimeout(function(){ intro.style.display = 'none'; }, 1200);
-  }
-  addEventListener('click', skip, {passive:true});
-  addEventListener('keydown', function(){ skip(); }, {once:true});
-  addEventListener('wheel', function(){ skip(); }, {once:true, passive:true});
-  addEventListener('touchstart', function(){ skip(); }, {once:true, passive:true});
-
-  preludePhase();
 })();
 
 /* ── 3. 首屏卡片扇形展开（滚动驱动） ── */
@@ -1347,6 +1363,26 @@ var ASSETS = {avatar:"data:image/webp;base64,UklGRlKUAABXRUJQVlA4IEaUAAAQpgKdASr
   var bgmEl = document.getElementById('bgm');
   var bgmBtn = document.getElementById('musicBtn');
 
+  /* 内联 base64 → Blob URL：手机内核（微信 X5 / iOS Safari）对超大 data:URI 视频支持差，
+     会出现"点了播放键但画面声音出不来"的假播放；转成 Blob 后走正常媒体管线，点开即播。 */
+  var blobUrls = {};
+  function assetUrl(key){
+    if(blobUrls[key]) return blobUrls[key];
+    var uri = ASSETS[key];
+    if(!uri) return null;
+    try{
+      var bin = atob(uri.slice(uri.indexOf(',') + 1));
+      var bytes = new Uint8Array(bin.length);
+      for(var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      blobUrls[key] = URL.createObjectURL(new Blob([bytes], {type: 'video/mp4'}));
+    }catch(err){ blobUrls[key] = uri; }   // 兜底：极旧内核转不了就直接用 data URI
+    return blobUrls[key];
+  }
+  /* 页面加载后空闲预热：用户点封面前就把 Blob 备好，点击零等待 */
+  setTimeout(function(){
+    for(var k in ASSETS){ if(k.slice(0,4) === 'song'){ try{ assetUrl(k); }catch(err){} } }
+  }, 3500);
+
   function pauseBgm(){                                // MV 开播时让背景循环静音
     if(bgmEl && !bgmEl.paused && bgmBtn) bgmBtn.click();
   }
@@ -1370,13 +1406,23 @@ var ASSETS = {avatar:"data:image/webp;base64,UklGRlKUAABXRUJQVlA4IEaUAAAQpgKdASr
       function setProg(pct){ if(prog) prog.style.width = pct + '%'; }
       function play(){
         pauseBgm();
-        if(!v.getAttribute('src')) v.setAttribute('src', ASSETS[v.dataset.asset]);  // 首次点击才加载（内联 data URI）
+        if(!v.getAttribute('src')){
+          var u = assetUrl(v.dataset.asset);              // 首次点击才加载（Blob URL，手机兼容）
+          if(!u) return;
+          v.setAttribute('src', u);
+        }
         mv.classList.add('started');
         mv.classList.remove('paused');
         mv.classList.add('playing');
         var pr = v.play();
         if(pr && typeof pr.then === 'function') pr.catch(function(){
-          mv.classList.remove('playing');
+          /* 部分手机内核第一次 play 会被打断：稍候自动重试一次 */
+          setTimeout(function(){
+            var p2 = v.play();
+            if(p2 && typeof p2.then === 'function') p2.catch(function(){
+              mv.classList.remove('playing');
+            });
+          }, 350);
         });
       }
       function pause(){
