@@ -97,6 +97,16 @@ button{font:inherit;color:inherit}
 body.intro-lock #skipBtn{display:flex}
 #skipBtn.ff{background:rgba(230,57,70,.6);border-color:transparent}
 
+/* 弱网加载标识：整页下载期间最先渲染的黑底小字 + 红色扫描线，开场层(100)加载后盖住它 */
+#boot{position:fixed;inset:0;z-index:60;background:#0a0a0a;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:16px}
+#boot b{font:700 12px/1 var(--mono);letter-spacing:.5em;text-indent:.5em;color:#fff}
+#boot i{width:104px;height:2px;background:rgba(255,255,255,.16);position:relative;overflow:hidden}
+#boot i::after{content:"";position:absolute;left:0;top:0;height:100%;width:40%;background:var(--red);
+  animation:bootSweep 1.1s var(--ease) infinite}
+@keyframes bootSweep{0%{transform:translateX(-110%)}100%{transform:translateX(360%)}}
+body.loaded #boot{opacity:0;pointer-events:none;transition:opacity .5s var(--ease)}
+
 /* ── 顶部极简栏（进场后显示，非菜单） ── */
 .rail{position:fixed;top:44px;left:0;right:0;z-index:800;display:flex;justify-content:space-between;gap:12px;padding:calc(env(safe-area-inset-top) + 10px) var(--pad) 10px;font:500 9.5px/1.4 var(--mono);letter-spacing:.16em;text-transform:uppercase;background:rgba(255,255,255,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);transform:translateY(-101%);transition:transform .6s var(--ease)}
 body.loaded .rail{transform:none}
@@ -257,8 +267,18 @@ section[id],footer[id]{scroll-margin-top:56px}
 .mv-warn code{color:var(--red2);font-size:9px}
 .mv.no-asset .mv-warn{display:grid}
 .mv.no-asset .mv-play{opacity:.35}
-.mv-prog{position:absolute;left:0;right:0;bottom:0;height:3px;width:0;background:var(--red);z-index:4;
-  transition:width .12s linear}
+/* 可拖动进度条：细红条 + 圆点手柄 + 时间浮层，触控区加高方便手指 */
+.mv-seek{position:absolute;left:0;right:0;bottom:0;height:30px;z-index:6;display:flex;align-items:flex-end;
+  padding:0 12px 7px;cursor:pointer;touch-action:none;-webkit-tap-highlight-color:transparent}
+.mv-track{position:relative;flex:1;height:3px;background:rgba(255,255,255,.28);border-radius:2px}
+.mv-prog{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--red);border-radius:2px}
+.mv-thumb{position:absolute;top:50%;left:0;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;
+  background:var(--red);box-shadow:0 1px 6px rgba(0,0,0,.45);opacity:0;transition:opacity .25s var(--ease)}
+.mv-seek.on .mv-thumb{opacity:1}
+.mv-time{position:absolute;right:12px;bottom:30px;padding:5px 8px;border-radius:6px;background:rgba(10,10,10,.8);
+  color:#fff;font:600 10px/1 var(--mono);letter-spacing:.08em;font-style:normal;white-space:nowrap;
+  opacity:0;transform:translateY(4px);transition:opacity .25s var(--ease),transform .25s var(--ease);pointer-events:none}
+.mv-seek.on .mv-time{opacity:1;transform:none}
 .mv-frame-soon{display:grid;place-items:center;background:var(--paper);border:1.5px solid var(--line)}
 .mv-soon-mark{font:300 clamp(26px,7vw,40px)/1 var(--sys);color:var(--line)}
 .mv-meta{display:flex;flex-direction:column;gap:5px;margin-top:10px;min-width:0}
@@ -486,17 +506,19 @@ section[id],footer[id]{scroll-margin-top:56px}
   .phil-grid{grid-template-columns:1fr 1fr;gap:clamp(34px,6vw,90px) clamp(30px,8vw,120px)}
   .phil-item.top-right,.phil-item.bottom-right{text-align:right}
 }
-/* 减少动效：关闭全部动画/过渡，内容直接显形 */
+/* 减少动效：正文动画关闭直接显形；开场动画按用户要求强制播放（豁免下方关闭规则） */
 @media (prefers-reduced-motion:reduce){
-  *{animation:none!important;transition:none!important}
+  *:not(#logoPrelude):not(#logoPrelude *):not(#intro):not(#intro *):not(#skipBtn):not(#boot):not(#boot *)
+    {animation:none!important;transition:none!important}
   .reveal{opacity:1;transform:none}
   .identity-copy>*{opacity:1;transform:none}
   .phil-item h3,.phil-item .en,.closing-line,.outro-h2{opacity:1;transform:none}
-  #logoPrelude,#intro,#skipBtn{display:none!important}
 }
 </style>
 </head>
 <body class="intro-lock">
+<!-- 弱网加载标识：HTML 流式解析时最先渲染，整页下载完被开场动画层盖住并移除 -->
+<div id="boot" aria-hidden="true"><b>ZENGLIN</b><i></i></div>
 
 <!-- 背景音乐：src 由构建脚本注入（单文件内联），preload=none 省流量 -->
 <audio id="bgm" loop preload="none" playsinline></audio>
@@ -720,7 +742,7 @@ section[id],footer[id]{scroll-margin-top:56px}
             <span class="mv-play" aria-hidden="true"><i></i></span>
             <span class="mv-tag" aria-hidden="true">MV·01</span>
             <span class="mv-warn" aria-hidden="true">MV 文件待上传<br><code>assets/music/song1.mp4</code></span>
-            <span class="mv-prog" aria-hidden="true"></span>
+            <div class="mv-seek" aria-hidden="true"><i class="mv-time">00:00 / 00:00</i><span class="mv-track"><span class="mv-prog"></span><span class="mv-thumb"></span></span></div>
           </div>
           <figcaption class="mv-meta">
             <b class="mv-title">引路人的光</b>
@@ -943,13 +965,10 @@ var ASSETS = {avatar:"data:image/webp;base64,UklGRlKUAABXRUJQVlA4IEaUAAAQpgKdASr
   var bar     = document.getElementById('preBar');
   if(!intro) return;
 
-  /* 减少动效：直接显形，两段开场都跳过 */
-  if(reduced){
-    if(prelude) prelude.style.display = 'none';
-    intro.style.display = 'none';
-    document.body.classList.remove('intro-lock');
-    document.body.classList.add('loaded');
-    return;
+  /* 减少动效也强制播放开场（用户要求所有手机都能看到 Logo 与开场动画） */
+  function killBoot(){
+    var boot = document.getElementById('boot');
+    if(boot && boot.parentNode) setTimeout(function(){ if(boot.parentNode) boot.parentNode.removeChild(boot); }, 700);
   }
 
   var TOTAL = 8.05;                 // 时间轴总长（秒）
@@ -970,6 +989,7 @@ var ASSETS = {avatar:"data:image/webp;base64,UklGRlKUAABXRUJQVlA4IEaUAAAQpgKdASr
     intro.classList.add('out');
     document.body.classList.remove('intro-lock');
     document.body.classList.add('loaded');
+    killBoot();
     setTimeout(function(){ intro.style.display = 'none'; }, 800);
   }
 
@@ -1404,6 +1424,58 @@ var ASSETS = {avatar:"data:image/webp;base64,UklGRlKUAABXRUJQVlA4IEaUAAAQpgKdASr
       if(!frame || !v) return;
 
       function setProg(pct){ if(prog) prog.style.width = pct + '%'; }
+      var seek = mv.querySelector('.mv-seek');
+      var thumb = mv.querySelector('.mv-thumb');
+      var timeTip = mv.querySelector('.mv-time');
+      var dragging = false, hideTipTimer = null;
+
+      function fmt(s){
+        if(!isFinite(s) || s < 0) s = 0;
+        s = Math.round(s);
+        var m = Math.floor(s / 60), r = s % 60;
+        return (m < 10 ? '0' : '') + m + ':' + (r < 10 ? '0' : '') + r;
+      }
+      function updateUI(cur, d){
+        var pct = d ? Math.min(100, cur / d * 100) : 0;
+        if(prog) prog.style.width = pct + '%';
+        if(thumb) thumb.style.left = pct + '%';
+        if(timeTip && d) timeTip.textContent = fmt(cur) + ' / ' + fmt(d);
+      }
+      function seekTo(clientX){
+        if(!seek) return;
+        var r = seek.getBoundingClientRect();
+        var ratio = Math.min(1, Math.max(0, (clientX - r.left) / r.width));
+        var d = v.duration;
+        if(isFinite(d) && d){
+          try{ v.currentTime = ratio * d; }catch(err){}
+          updateUI(ratio * d, d);
+        }
+      }
+      if(seek){
+        /* 拖动/点按进度条：不触发封面的播放暂停切换 */
+        seek.addEventListener('pointerdown', function(e){
+          e.stopPropagation();
+          if(!v.getAttribute('src')) return;
+          dragging = true;
+          seek.classList.add('on');
+          if(seek.setPointerCapture){ try{ seek.setPointerCapture(e.pointerId); }catch(err){} }
+          seekTo(e.clientX);
+        });
+        seek.addEventListener('pointermove', function(e){
+          if(!dragging) return;
+          e.stopPropagation();
+          seekTo(e.clientX);
+        });
+        function endDrag(){
+          if(!dragging) return;
+          dragging = false;
+          clearTimeout(hideTipTimer);
+          hideTipTimer = setTimeout(function(){ seek.classList.remove('on'); }, 900);
+        }
+        seek.addEventListener('pointerup', endDrag);
+        seek.addEventListener('pointercancel', function(){ dragging = false; seek.classList.remove('on'); });
+        seek.addEventListener('click', function(e){ e.stopPropagation(); });
+      }
       function play(){
         pauseBgm();
         if(!v.getAttribute('src')){
@@ -1437,10 +1509,11 @@ var ASSETS = {avatar:"data:image/webp;base64,UklGRlKUAABXRUJQVlA4IEaUAAAQpgKdASr
         if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); }
       });
       v.addEventListener('timeupdate', function(){
-        var d = v.duration; if(d) setProg(Math.min(100, (v.currentTime / d) * 100));
+        if(dragging) return;                      // 拖动中以手指位置为准
+        updateUI(v.currentTime, v.duration);
       });
       v.addEventListener('ended', function(){
-        mv.classList.remove('playing','paused'); setProg(0);
+        mv.classList.remove('playing','paused'); updateUI(0, v.duration);
         try{ v.currentTime = 0; }catch(err){}
       });
       v.addEventListener('error', function(){          // 文件还没放：卡片显示「待上传」
