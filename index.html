@@ -508,7 +508,7 @@ section[id],footer[id]{scroll-margin-top:56px}
 }
 /* 减少动效：正文动画关闭直接显形；开场动画按用户要求强制播放（豁免下方关闭规则） */
 @media (prefers-reduced-motion:reduce){
-  *:not(#logoPrelude):not(#logoPrelude *):not(#intro):not(#intro *):not(#skipBtn):not(#boot):not(#boot *)
+  *:not(#logoPrelude):not(#logoPrelude *):not(#intro):not(#intro *):not(#skipBtn):not(#boot):not(#boot *):not(.mq):not(.star-track)
     {animation:none!important;transition:none!important}
   .reveal{opacity:1;transform:none}
   .identity-copy>*{opacity:1;transform:none}
