@@ -174,13 +174,14 @@ section[id],footer[id]{scroll-margin-top:56px}
 
 /* ── 跑马灯 ── */
 .ticker{overflow:hidden;border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);padding:12px 0;background:var(--paper)}
-.mq{display:inline-flex;align-items:center;animation:mq 34s linear infinite;white-space:nowrap}
+.mq{display:flex;width:max-content;align-items:center;white-space:nowrap;will-change:transform;
+  -webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);animation:mq 34s linear infinite}
 .ticker:hover .mq{animation-play-state:paused}
 .mq span{display:inline-flex;align-items:center;gap:10px;padding-right:24px;
   font:500 10.5px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)}
 .mq span b{color:var(--red);font-weight:700}
 .mq span i{width:4px;height:4px;border-radius:50%;background:var(--red);flex:none;opacity:.7}
-@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes mq{from{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}to{-webkit-transform:translate3d(-50%,0,0);transform:translate3d(-50%,0,0)}}
 
 /* ── 02 关于我 ── */
 .about-grid{display:grid;grid-template-columns:1fr;gap:clamp(26px,8vw,72px)}
@@ -297,8 +298,9 @@ section[id],footer[id]{scroll-margin-top:56px}
 
 /* ── 星轨 ── */
 .star-rail{overflow:hidden;border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);padding:14px 0;background:var(--paper)}
-.star-track{display:inline-flex;align-items:center;white-space:nowrap;animation:ribbon 28s linear infinite}
-@keyframes ribbon{to{transform:translateX(-50%)}}
+.star-track{display:flex;width:max-content;align-items:center;white-space:nowrap;will-change:transform;
+  -webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);animation:ribbon 28s linear infinite}
+@keyframes ribbon{from{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}to{-webkit-transform:translate3d(-50%,0,0);transform:translate3d(-50%,0,0)}}
 .star-track span{display:inline-flex;align-items:center;gap:16px;padding-right:16px;
   font:600 13px/1 var(--sys);letter-spacing:.04em;color:var(--ink)}
 .star-track span em{font:500 9px/1 var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--red);font-style:normal}
