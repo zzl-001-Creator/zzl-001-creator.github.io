@@ -288,13 +288,17 @@ section[id],footer[id]{scroll-margin-top:56px}
 .mv-sub{font:500 8.5px/1 var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3);font-style:normal}
 .mv-soon .mv-title{color:var(--ink-3)}
 
-/* ── 07 诗句页 ── */
-.verse{position:relative;min-height:56vh;display:grid;place-items:center;text-align:center;
-  padding:clamp(60px,16vw,150px) var(--pad);overflow:hidden;border-top:1px solid var(--line)}
+/* ── 07 诗句页 · 良夜星系（深色夜景：红金轨道粒子 + 亮核 + 星尘） ── */
+.verse{position:relative;min-height:88vh;min-height:92svh;display:grid;place-items:center;text-align:center;
+  padding:clamp(60px,16vw,150px) var(--pad);overflow:hidden;
+  background:radial-gradient(130% 95% at 50% 38%, #191007 0%, #0d0a07 52%, #060504 100%)}
 #sky-verse{position:absolute;inset:0;width:100%;height:100%;z-index:0}
 .verse-inner{position:relative;z-index:1}
-.verse-cn{font:400 clamp(24px,8vw,76px)/1.34 var(--serif);font-style:italic;letter-spacing:-.02em}
-.verse-en{margin-top:18px;font:500 clamp(12px,3.6vw,15px)/1.5 var(--sans);letter-spacing:.06em;color:var(--ink-3)}
+.verse-cn{font:400 clamp(26px,8vw,76px)/1.34 var(--serif);font-style:italic;letter-spacing:-.02em;color:#fff;
+  text-shadow:0 2px 18px rgba(0,0,0,.65),0 0 46px rgba(0,0,0,.4),0 0 90px rgba(230,57,70,.22)}
+.verse-en{margin-top:18px;font:500 clamp(12px,3.6vw,15px)/1.5 var(--sys);letter-spacing:.06em;color:rgba(232,176,75,.78);
+  text-shadow:0 1px 12px rgba(0,0,0,.6)}
+.verse-by{margin-top:16px;font:500 9px/1 var(--mono);letter-spacing:.32em;text-transform:uppercase;color:rgba(255,255,255,.34)}
 
 /* ── 星轨 ── */
 .star-rail{overflow:hidden;border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);padding:14px 0;background:var(--paper)}
@@ -306,21 +310,73 @@ section[id],footer[id]{scroll-margin-top:56px}
 .star-track span em{font:500 9px/1 var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--red);font-style:normal}
 .star-track i{color:var(--red);font-style:normal}
 
-/* ── 星爆章节 ── */
-.starburst{position:relative;height:220vh}
-#burst-bg{position:fixed;inset:0;z-index:1;background:var(--dark);opacity:0;pointer-events:none}
+/* ── 星爆章节（pin 段：100vh 舞台 + 150vh 滚动 = end "+=150%"） ──
+   为避免"割裂成一块独立炫酷页"：舞台底色与前一章诗句页同源（同一暗红家族），
+   并在上下各留一条细线过渡，使这一章读起来仍是全站排版的一部分，而非孤岛。 */
+.starburst{position:relative;height:250vh}
+.starburst::before,.starburst::after{content:"";position:absolute;left:var(--pad);right:var(--pad);
+  height:1px;background:rgba(255,255,255,.10);z-index:6;pointer-events:none}
+.starburst::before{top:0}
+.starburst::after{bottom:0}
+#burst-bg{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0;
+  background:radial-gradient(circle at 50% 50%, #2b0d12 0%, #170a0c 34%, #0d0d0d 62%, #0A0A0A 100%)}
 #ray-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;opacity:0}
-#ink{position:fixed;top:50%;left:50%;width:120px;height:120px;transform:translate(-50%,-50%);
-  border-radius:50%;background:var(--dark);z-index:3;pointer-events:none;opacity:0}
-#expand-star{position:fixed;top:50%;left:50%;width:88px;height:88px;transform:translate(-50%,-50%);
-  z-index:4;pointer-events:none;opacity:0}
-.caption-stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
-  pointer-events:none;z-index:5;opacity:0;transition:opacity .5s var(--ease);padding:0 24px}
-.caption-stage.on{opacity:1}
-.caption{text-align:center;transition:opacity .6s var(--ease);opacity:0}
-.caption.visible{opacity:1}
-.caption-title{font-weight:800;font-size:clamp(38px,13vw,120px);line-height:.94;letter-spacing:-.05em;color:#fff}
-.caption-sub{margin-top:12px;font:500 10px/1 var(--mono);letter-spacing:.34em;text-transform:uppercase;color:var(--red2)}
+/* 舞台：眉标行 + 大字。透明度由 JS 按滚动进度直接写（1:1 scrub）。
+   ⚠ 这一块是情绪顶点：文字必须够大、够重、够短。
+   上一版加了三行注脚 → 节奏被稀释、没有重点。注脚已移除，改由 08 四格与收尾承担。 */
+.caption-stage{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  pointer-events:none;z-index:5;opacity:0;visibility:hidden;
+  padding:0 var(--pad);gap:clamp(18px,5vw,34px)}
+.caption-stage.on{visibility:visible}
+
+/* 顶部眉标：细线在起爆同一刻冲到满（JS 直接写 scaleX，短促不拖沓） */
+.cap-head{display:flex;align-items:center;gap:12px;width:100%;max-width:1000px;
+  opacity:0;transition:opacity .28s var(--ease)}
+.caption-stage.on .cap-head{opacity:1}
+.cap-no{font:700 9.5px/1 var(--mono);letter-spacing:.3em;text-transform:uppercase;color:var(--red2);white-space:nowrap}
+.cap-rule{display:block;flex:1;height:1px;background:linear-gradient(90deg,rgba(230,57,70,.85),rgba(255,255,255,.2));
+  transform:scaleX(0);transform-origin:left center;will-change:transform}
+.cap-count{font:600 9.5px/1 var(--mono);letter-spacing:.22em;color:rgba(255,255,255,.46);
+  white-space:nowrap;font-variant-numeric:tabular-nums}
+.cap-no,.cap-count{text-shadow:0 1px 10px rgba(0,0,0,.85)}
+
+/* 大字：全站最大的一处排版。四句依次"淡入 → 停留 → 淡出"，
+   透明度由 JS 按滚动进度逐帧写（柔和的交叉淡入淡出，像电影换镜）。
+   中英对译：中文是主体，**英文作为副行、字号明显更小**。 */
+.caption{text-align:center;max-width:1100px;opacity:0;
+  position:relative;z-index:1}
+.caption-title{font-weight:900;font-size:clamp(46px,16vw,150px);line-height:.92;letter-spacing:-.05em;color:#fff;
+  text-shadow:0 2px 16px rgba(0,0,0,.9),0 8px 54px rgba(0,0,0,.78),0 0 110px rgba(0,0,0,.55)}
+/* 英文副行：字号约为中文的 1/7（62px vs 9px），等宽、宽字距、红色 —— 明确从属。
+   下方留足空间给点击提示（提示是 fixed 在舞台底部，不能与副行叠字）。 */
+.caption-sub{margin-top:clamp(16px,4.2vw,28px);margin-bottom:clamp(34px,9vw,52px);
+  font:600 clamp(9px,2.4vw,11px)/1 var(--mono);letter-spacing:.40em;
+  text-transform:uppercase;color:var(--red2);text-shadow:0 1px 14px rgba(0,0,0,.95)}
+/* 点击提示：固定在舞台下方（相对视口底），脱离文字流 → 永不与副行重叠 */
+.cap-hint{position:absolute;left:50%;bottom:clamp(60px,15vh,120px);transform:translateX(-50%);
+  display:flex;align-items:center;gap:8px;
+  font:500 9.5px/1 var(--mono);letter-spacing:.2em;color:rgba(255,255,255,.4);
+  opacity:0;visibility:hidden;white-space:nowrap}
+.caption-stage.on .cap-hint{visibility:visible}
+
+/* 点击应答：起爆之后点一下可"再炸一次"，文字同步亮一下（落在内容上的反馈）*/
+.caption-stage.poke .caption-title{animation:capPoke .56s var(--ease)}
+.caption-stage.poke .cap-rule{filter:brightness(1.6)}
+@keyframes capPoke{
+  0%{filter:none}
+  20%{filter:brightness(1.5) drop-shadow(0 0 30px rgba(230,57,70,.9))}
+  100%{filter:none}
+}
+
+/* 点击提示的呼吸红点 + 触屏字距微调
+   （位置/可见性已在上方 .cap-hint 定义；此处只补细节，不重复定位） */
+.cap-hint i{width:5px;height:5px;border-radius:50%;background:var(--red2);flex:none;
+  animation:capDot 3.2s ease-in-out infinite}
+@keyframes capDot{0%,100%{box-shadow:0 0 0 0 rgba(255,77,90,.45);opacity:.7}
+  50%{box-shadow:0 0 0 6px rgba(255,77,90,0);opacity:1}}
+@media (hover:none) and (pointer:coarse){
+  .cap-hint{letter-spacing:.16em}
+}
 
 /* ── 08 原则四格 ── */
 .phil{position:relative;background:var(--dark);color:#fff;padding:clamp(70px,18vw,160px) var(--pad);overflow:hidden}
@@ -467,9 +523,7 @@ section[id],footer[id]{scroll-margin-top:56px}
   .grid{grid-template-columns:repeat(3,1fr)}
   .c-grid{grid-template-columns:1.1fr .9fr;align-items:end}
   .closing-grid{grid-template-columns:1fr 1fr;align-items:start}
-  .starburst{height:300vh}
-  #ink{width:160px;height:160px}
-  #expand-star{width:120px;height:120px}
+  .starburst{height:250vh}
   .halo-ring{width:300px;height:300px}
   .identity-track{height:320vh}
   .identity-stage{position:sticky;top:0;height:100vh;min-height:560px;overflow:hidden;display:grid;
@@ -515,6 +569,9 @@ section[id],footer[id]{scroll-margin-top:56px}
   .reveal{opacity:1;transform:none}
   .identity-copy>*{opacity:1;transform:none}
   .phil-item h3,.phil-item .en,.closing-line,.outro-h2{opacity:1;transform:none}
+  /* 星爆段：动效关闭时舞台仍需可见（否则这一章的文案彻底消失） */
+  .cap-head{opacity:1;transform:none}
+  .cap-hint{opacity:1;transform:none}
 }
 </style>
 </head>
@@ -771,6 +828,7 @@ section[id],footer[id]{scroll-margin-top:56px}
     <div class="verse-inner">
       <p class="verse-cn reveal">Do not go gentle into that good night</p>
       <div class="verse-en reveal d1">不要温和地走进那个良夜</div>
+      <div class="verse-by reveal d2">Dylan Thomas · 1951</div>
     </div>
   </section>
 
@@ -792,20 +850,19 @@ section[id],footer[id]{scroll-margin-top:56px}
     </div>
   </div>
 
-  <!-- 星爆章节（高潮区之一，点击可炸） -->
+  <!-- 07 星爆章节（第三幕 · 情绪顶点：滚动到位自动起爆 + 起爆后可再炸） -->
   <div id="burst-bg"></div>
   <canvas id="ray-canvas"></canvas>
-  <div id="ink"></div>
-  <div id="expand-star">
-    <svg viewBox="0 0 120 120" width="100%" height="100%" aria-hidden="true">
-      <path d="M60 0 C66 34 86 54 120 60 C86 66 66 86 60 120 C54 86 34 66 0 60 C34 54 54 34 60 0 Z" fill="#e63946"/>
-    </svg>
-  </div>
   <div class="caption-stage" id="captionStage">
+    <div class="cap-head">
+      <span class="cap-no">07 / Turning Point</span>
+      <span class="cap-rule" id="capRule"></span>
+      <span class="cap-count" id="capCount">01 / 04</span>
+    </div>
     <div class="caption" id="caption">
       <div class="caption-title" id="capTitle">先动起来</div>
-      <div class="caption-sub" id="capSub">Move first</div>
-    </div>
+      <div class="caption-sub" id="capSub">Move first</div>    </div>
+    <div class="cap-hint" id="capHint"><i></i>还想再来一次就点一下</div>
   </div>
   <section class="starburst" id="chapters"><div class="sticky-ph"></div></section>
 
@@ -1166,158 +1223,615 @@ var ASSETS = {avatar:"data:image/webp;base64,UklGRlKUAABXRUJQVlA4IEaUAAAQpgKdASr
   run();
 })();
 
-/* ── 7. 诗句页星空（低密度、离屏暂停） ── */
+/* ── 7. 诗句页 · 良夜星系（红金轨道粒子 + 亮核 + 星尘；离屏暂停、移动端降密度、reduced-motion 静帧） ── */
 (function(){
   var cv = document.getElementById('sky-verse');
   if(!cv) return;
   var ctx = cv.getContext('2d');
-  var W=0,H=0,pts=[],dpr=Math.min(devicePixelRatio||1,2),raf=0,visible=true;
+  var W=0,H=0,cx=0,cy=0,R=0,dpr=Math.min(devicePixelRatio||1,2);
+  var raf=0,visible=true,orbits=[],dust=[];
+  var RED='230,57,70', GOLD='232,176,75', WARM='255,240,220';
+  var px=0,py=0,tx=0,ty=0;   /* 指针视差（缓动跟随） */
+
+  function pick(pRed,pGold){
+    var r=Math.random();
+    return r<pRed?RED:(r<pRed+pGold?GOLD:WARM);
+  }
+  function blob(c,a){ return 'rgba('+c+','+a.toFixed(3)+')'; }
   function build(){
+    var mob = matchMedia('(max-width:760px)').matches;
     W = cv.clientWidth; H = cv.clientHeight;
     cv.width = W*dpr; cv.height = H*dpr;
     ctx.setTransform(dpr,0,0,dpr,0,0);
-    var n = Math.round(Math.min(isMobile()?50:110, W*H/16000));
-    pts = [];
-    for(var i=0;i<n;i++) pts.push({x:Math.random()*W,y:Math.random()*H,
-      r:Math.random()*1.3+.3,a:Math.random()*.3+.12,p:Math.random()*6.28});
+    cx = W*.5; cy = H*.40; R = Math.min(W,H);
+    orbits = [];
+    var ringN = mob?4:6, i, j;
+    for(i=0;i<ringN;i++){
+      var o = {rx:R*(.30+.70*((i+Math.random()*.7)/ringN)),
+        tilt:.14+Math.random()*.34,
+        rot:(i/ringN)*Math.PI + Math.random()*.5,
+        dir:i%2?1:-1, ps:[]};
+      var pn = mob?30:56;
+      for(j=0;j<pn;j++){
+        o.ps.push({a:Math.random()*6.283, sp:(.05+Math.random()*.06)*(.6+Math.random()*.8),
+          r:.5+Math.random()*1.4, col:pick(.5,.55), al:.25+Math.random()*.55});
+      }
+      orbits.push(o);
+    }
+    dust = [];
+    var dn = mob?42:96;
+    for(i=0;i<dn;i++){
+      dust.push({x:Math.random()*W, y:Math.random()*H,
+        r:.3+Math.random()*1.2, p:Math.random()*6.283, s:.4+Math.random()*1.1,
+        col:pick(.25,.5), al:.12+Math.random()*.4});
+    }
   }
   function draw(t){
     raf = 0;
     if(visible){
       ctx.clearRect(0,0,W,H);
-      for(var i=0;i<pts.length;i++){
-        var p = pts[i];
+      px += (tx-px)*.045; py += (ty-py)*.045;
+      ctx.save();
+      ctx.translate(px,py);
+      ctx.globalCompositeOperation = 'lighter';
+      var i,j,o,p,th,x,y,ex,ey,dep;
+      for(i=0;i<dust.length;i++){
+        p = dust[i];
+        var da = p.al*(.45+.55*Math.sin(t*.0009*p.s+p.p));
+        if(da<=0) continue;
         ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,6.283);
-        ctx.fillStyle = 'rgba(10,10,10,' + (p.a*(.5+.5*Math.sin(t*.0011+p.p))).toFixed(3) + ')';
-        ctx.fill();
+        ctx.fillStyle = blob(p.col,da); ctx.fill();
       }
+      for(i=0;i<orbits.length;i++){
+        o = orbits[i];
+        var ca=Math.cos(o.rot), sa=Math.sin(o.rot);
+        for(j=0;j<o.ps.length;j++){
+          p = o.ps[j];
+          th = p.a + t*.001*p.sp*o.dir;
+          ex = Math.cos(th)*o.rx; ey = Math.sin(th)*o.rx*o.tilt;
+          x = cx + ex*ca - ey*sa; y = cy + ex*sa + ey*ca;
+          dep = .45+.55*(Math.sin(th)+1)/2;   /* 近亮远暗的伪 3D */
+          ctx.beginPath(); ctx.arc(x,y,p.r*dep,0,6.283);
+          ctx.fillStyle = blob(p.col,p.al*dep); ctx.fill();
+        }
+      }
+      var cr = R*(.085+.012*Math.sin(t*.0007));
+      var g = ctx.createRadialGradient(cx,cy,0,cx,cy,cr*2.6);
+      g.addColorStop(0,'rgba(255,244,224,.85)');
+      g.addColorStop(.22,'rgba(232,176,75,.42)');
+      g.addColorStop(.5,'rgba(230,57,70,.20)');
+      g.addColorStop(1,'rgba(230,57,70,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(cx,cy,cr*2.6,0,6.283); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx,cy,cr*.16,0,6.283);
+      ctx.fillStyle = 'rgba(255,250,240,.9)'; ctx.fill();
+      ctx.restore();
     }
     if(!reduced && visible) raf = requestAnimationFrame(draw);
   }
   build();
   addEventListener('resize', function(){ build(); if(reduced||!visible) draw(performance.now()); }, {passive:true});
+  addEventListener('pointermove', function(e){
+    tx = (e.clientX/innerWidth-.5)*14; ty = (e.clientY/innerHeight-.5)*10;
+  }, {passive:true});
   if('IntersectionObserver' in window){
     new IntersectionObserver(function(es){
       visible = es[0].isIntersecting;
-      if(visible && !raf) raf = requestAnimationFrame(draw);
+      if(visible && !raf && !reduced) raf = requestAnimationFrame(draw);
     }, {threshold:0}).observe(cv);
   }
   draw(performance.now());
 })();
 
-/* ── 8. 星爆：中心放射线场（离屏暂停、移动端降密度、密度随滚动速度） ── */
+/* ── 8. 星轨爆炸 · 第三幕情绪顶点（电影感 · 一句一句淡入淡出） ────
+   设计目标（本轮用户要求）：
+     ① 文字：四句 —— 先动起来 / 保持好奇 / 保持喜欢 / 往前走
+        一句一句**淡入淡出**，每句都有停留让观众看清（像电影分镜，不闪切）
+     ② 交互：星爆段内部有**强推进感** + **鼠标视差**（射线与核心轻微透视跟随）
+     ③ 爆炸：在上一版基础上**大幅加强** —— 更密更长的射线、更强白热、
+              更多冲击环、加镜头抖动（全站最强烈的一刻）
+     ④ 气质：柔和淡入淡出，不硬切；像看电影
+
+   编排（一切由滚动进度 p 驱动；位置是纯函数、可精确倒放）：
+     p 0→0.14     蓄势屏息：射线收拢、尘埃公转（画面是活的，但在屏息）
+     p 0.14→0.26  **起爆**：白热硬核 + 4 环冲击 + 粒子 + 镜头抖动，射线冲出画面
+     p 0.26→0.92  四句依次淡入淡出（每句约 0.165 行程：淡入 .05 / 停留 .065 / 淡出 .05）
+     p 0.92→1.00  精确淡出，绝不溢出到下一 section
+
+   触发：滚动到位自动起爆（高潮一定发生）；起爆后点击可"再炸一次"。
+   配色：唯一强调色红 #e63946 → 暗红 → 深灰（无金/橙）。
+   ──────────────────────────────────────────────────────────────── */
 (function(){
   var cv = document.getElementById('ray-canvas');
   var ch = document.getElementById('chapters');
   if(!cv || !ch) return;
   var ctx = cv.getContext('2d');
   var bg = document.getElementById('burst-bg');
-  var ink = document.getElementById('ink');
-  var star = document.getElementById('expand-star');
-  var W=0,H=0,cx=0,cy=0,lines=[],sp=0,raf=0,active=false;
-  var COLORS = ['#ff2e2e','#ff2e2e','#ffffff'];
+  var W=0,H=0,cx=0,cy=0,R=0,raf=0,running=false,vis=false,sp=0;
+  var rays=[], sparks=[], dust=[], rings=[], flare=[], streak=[];
+  var wake=0, wakeRaf=0, lastWakeT=0, lastPoke=0;
+  /* 鼠标视差：目标偏移（缓动逼近，避免生硬跟手） */
+  var ptx=0, pty=0, ppx=0, ppy=0;
 
-  function initLines(){
-    var div = isMobile() ? 9 : 5;
-    var count = Math.floor(Math.max(W,H)/div);
-    lines = [];
-    for(var i=0;i<count;i++){
-      var a = Math.random()*Math.PI*2, dx = Math.cos(a), dy = Math.sin(a), t = Infinity;
-      if(dx > 1e-6) t = Math.min(t,(W-cx)/dx); else if(dx < -1e-6) t = Math.min(t,(0-cx)/dx);
-      if(dy > 1e-6) t = Math.min(t,(H-cy)/dy); else if(dy < -1e-6) t = Math.min(t,(0-cy)/dy);
-      lines.push({angle:a,L:Math.max(0,t)*1.15,
-        color:COLORS[Math.floor(Math.random()*COLORS.length)],
-        thicknessBase:.6+Math.random()*1.0, baseAlpha:.2+Math.random()*.4,
-        threshold:Math.random(), depth:Math.random(), delay:Math.random()*150,
-        age:0, flow:Math.random(), speedFlow:.003+Math.random()*.005});
+  var RED='230,57,70', DRED='143,29,40', GRAY='58,58,58', WHITE='255,240,238';
+  /* 关键相位（第 9 节文案引擎共用同一组常量） */
+  var CHARGE0=.14, BLAST0=.14, BLAST1=.26;
+  var WORD0=.26, WORD1=.92;          /* 四句占用的行程区间 */
+  var FADE0=.92, FADE1=1, BREATH=3400;
+
+  function rgba(c,a){ return 'rgba('+c+','+(a>0?a:0).toFixed(3)+')'; }
+  function clamp01(x){ return x<0?0:(x>1?1:x); }
+  function easeOut(x){ var u=1-x; return 1-u*u*u; }
+  function easeIn(x){ return x*x*x; }
+  function rnd(i,s){ var x=Math.sin(i*127.1+s*311.7)*43758.5453; return x-Math.floor(x); }
+
+  function build(){
+    var mob = matchMedia('(max-width:760px)').matches;
+    W = cv.width = innerWidth; H = cv.height = innerHeight;
+    cx = W/2; cy = H/2;
+    R = Math.hypot(W,H)*.78;                       /* 比上版 .72 更远 → 炸得更开 */
+    var n = mob?40:64, i;                          /* 比上版 30/46 更密 */
+    rays = [];
+    for(i=0;i<n;i++){
+      var t = i/n;
+      rays.push({
+        a:  t*6.28318 + (rnd(i,1)-.5)*.16,
+        len:.58 + rnd(i,2)*.42,
+        w:  1.3 + rnd(i,3)*2.6,                    /* 更粗 */
+        al: .34 + rnd(i,4)*.46,                    /* 更亮 */
+        at: rnd(i,5)*.58,
+        col:(i%10===0)?GRAY:(i%3===0?DRED:RED)
+      });
+    }
+    var m = mob?56:110, j;                         /* 粒子更多 */
+    sparks = [];
+    for(j=0;j<m;j++){
+      sparks.push({
+        a:  rnd(j,7)*6.28318,
+        v:  .28 + rnd(j,8)*.78,
+        r:  .6 + rnd(j,9)*2.1,
+        d:  rnd(j,10)*.18,
+        col:(j%7===0)?GRAY:(j%3===0?DRED:RED)
+      });
+    }
+    var dn = mob?54:120, k;
+    dust = [];
+    for(k=0;k<dn;k++){
+      dust.push({
+        a0: rnd(k,21)*6.28318,
+        orb: .14 + rnd(k,22)*.66,
+        sp:  (.04 + rnd(k,23)*.16) * ((k&1)?1:-1),
+        r:   .5 + rnd(k,24)*1.7,
+        al:  .14 + rnd(k,25)*.36,
+        bob: rnd(k,26)*6.28318,
+        col: (k%11===0)?GRAY:(k%4===0?DRED:RED)
+      });
+    }
+    /* 冲击环：从 3 环加到 4 环，错峰更细，厚度更强 */
+    rings = [];
+    for(k=0;k<4;k++){
+      rings.push({ delay:k*.045, spread:.80 + k*.22, w:3.0 - k*.5, a:.50 - k*.09 });
+    }
+    flare = [];
+    for(k=0;k<4;k++){
+      flare.push({ ang: k*Math.PI/2 + .06, w: 3.0 - k*.4, a: .46 - k*.065, len: .84 + k*.16 });
+    }
+    /* ── 新增：细长星轨 streak（"星轨爆炸"字面义）─────────────────
+       比射线更细、更快、更长，起爆瞬间像流星群一样甩出去，
+       末端带一点拖尾 → 视觉上就是"星轨炸开"。 */
+    var sn = mob?26:46, q;
+    streak = [];
+    for(q=0;q<sn;q++){
+      streak.push({
+        a:  rnd(q,31)*6.28318,
+        len:.70 + rnd(q,32)*.60,
+        w:  .6 + rnd(q,33)*1.0,
+        d:  rnd(q,34)*.12,
+        sp: .9 + rnd(q,35)*.6,
+        col:(q%6===0)?GRAY:(q%2===0?RED:WHITE)
+      });
     }
   }
-  function resize(){ W = cv.width = innerWidth; H = cv.height = innerHeight; cx = W/2; cy = H/2; initLines(); }
 
-  function drawLines(){
-    ctx.clearRect(0,0,W,H);
-    var ease = sp, speedMul = 1 + ease*1.2;
-    var density = Math.min(.45, .1 + ease*.35), alphaMul = .5 + ease*.5;
-    var holeR = Math.min(W,H)*.15;
-    for(var i=0;i<lines.length;i++){
-      var l = lines[i]; l.age += 16;
-      if(l.age < l.delay) continue;
-      var fade = (density - l.threshold)*2.5; if(fade <= 0) continue;
-      var layer = .5 + l.depth*1.3, ca = Math.cos(l.angle), sa = Math.sin(l.angle);
-      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+ca*l.L, cy+sa*l.L);
-      ctx.strokeStyle = l.color; ctx.lineWidth = l.thicknessBase;
-      ctx.globalAlpha = l.baseAlpha*Math.min(1,fade)*alphaMul*(.4+l.depth*.6);
-      ctx.lineCap = 'round'; ctx.stroke();
-      l.flow += l.speedFlow*speedMul*layer; if(l.flow > 1.25) l.flow -= 1.25;
-      var fh = l.flow*l.L, tail = Math.max(16, l.L*.14);
-      ctx.beginPath();
-      ctx.moveTo(cx+ca*Math.max(0,fh-tail), cy+sa*Math.max(0,fh-tail));
-      ctx.lineTo(cx+ca*fh, cy+sa*fh);
-      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = l.thicknessBase*(1.1+l.depth*.6);
-      ctx.globalAlpha = Math.min(1, l.baseAlpha*Math.min(1,fade)*alphaMul*1.4); ctx.stroke();
+  function paint(t){
+    var p = sp;
+    var blast = easeOut(clamp01((p - BLAST0) / (BLAST1 - BLAST0)));
+    var blastE = easeOut(blast);
+    var charge = clamp01(p / CHARGE0);
+    var fade = p <= FADE0 ? 1 : clamp01(1 - (p - FADE0) / (FADE1 - FADE0));
+
+    /* 呼吸：屏息尾段与起爆后都存在（幅度小） */
+    var breathAmt = p < BLAST0 ? charge * .55 : 1;
+    var br = 1 + .05 * Math.sin(t / BREATH * 6.28318) * breathAmt;
+
+    /* 点击"再炸一次"：瞬时冲量（不能 clamp 到饱和，否则定格后点了没反应） */
+    var wk = (wake > 0 && p > BLAST0) ? wake : 0;
+    var impulse = wk * wk * (3 - 2 * wk);
+    br *= 1 + .50 * impulse;
+    var punch = 1 + .24 * impulse;
+
+    /* 镜头抖动：起爆瞬间画面整体轻微位移（电影感的关键） */
+    var shakeRaw = clamp01((p - BLAST0) / .10) * (1 - clamp01((p - BLAST0 - .05) / .16));
+    var shake = Math.max(shakeRaw, impulse * .8);
+    var shx = Math.sin(t * .045) * 9 * shake;
+    var shy = Math.cos(t * .058) * 7 * shake;
+
+    /* 鼠标视差：缓动逼近目标（在 shake 之上叠加） */
+    ppx += (ptx - ppx) * .075;
+    ppy += (pty - ppy) * .075;
+
+    ctx.clearRect(0, 0, W, H);
+    ctx.save();
+    ctx.translate(shx + ppx, shy + ppy);
+
+    var i, r, li, el, L, ang, al, x2, y2, g;
+    var sec = t / 1000;
+    /* 视差对"层"的放大：尘埃（远）动得多，射线（近）动得少 → 透视纵深 */
+    var pxFar = 1, pxNear = .45;
+
+    /* ── ① 环绕尘埃（最底层；位置纯函数 + 时间微颤）────────────── */
+    var spin = p * 5.2;
+    for(i = 0; i < dust.length; i++){
+      var d = dust[i];
+      var da = d.a0 + d.sp * 14 * spin;
+      var drBase = R * d.orb * (1 - .18 * charge);
+      var dr = drBase * (1 + .07 * Math.sin(sec * 1.1 + d.bob) + .04 * Math.sin(sec * 2.3 + d.bob * 1.7));
+      var dpush = 1 + (.58 * blastE + .38 * impulse);
+      var dxx = cx + Math.cos(da) * dr * dpush + ppx * pxFar * 1.6;
+      var dyy = cy + Math.sin(da) * dr * dpush + ppy * pxFar * 1.6;
+      var dvis = p < BLAST0 ? (.55 + .45 * charge) : (1 - .38 * blastE);
+      var dtw = .78 + .22 * Math.sin(sec * 1.7 + d.bob * 2.1);
+      var dal = d.al * dvis * dtw * br * fade;
+      if(dal <= .004) continue;
+      ctx.fillStyle = rgba(d.col, dal);
+      ctx.beginPath(); ctx.arc(dxx, dyy, d.r, 0, 6.28318); ctx.fill();
     }
-    var g = ctx.createRadialGradient(cx,cy,0,cx,cy,holeR*1.15);
-    g.addColorStop(0,'rgba(10,10,10,.95)'); g.addColorStop(.65,'rgba(10,10,10,.4)'); g.addColorStop(1,'rgba(10,10,10,0)');
-    ctx.fillStyle = g; ctx.fillRect(0,0,W,H); ctx.globalAlpha = 1;
+
+    /* ── ② 主射线：冲出画面 ─────────────────────────────────────── */
+    for(i = 0; i < rays.length; i++){
+      r = rays[i];
+      li = clamp01((blast - r.at) / (1 - r.at));
+      el = easeOut(li);
+      var grow = .16 + .06 * (1 - charge);
+      var reach = grow + (1.32 - grow) * el;
+      L = r.len * R * reach * punch;
+      if(L < 1.5) continue;
+      ang = r.a + (1 - el) * .12 * ((i & 1) ? 1 : -1);
+      al = r.al * (.10 + .90 * el) * br * fade;
+      if(al <= .002) continue;
+      x2 = cx + Math.cos(ang) * L + ppx * pxNear;
+      y2 = cy + Math.sin(ang) * L + ppy * pxNear;
+      g = ctx.createLinearGradient(cx, cy, x2, y2);
+      g.addColorStop(0,   rgba(WHITE, al * (.62 * el + .14)));
+      g.addColorStop(.16, rgba(r.col, al));
+      g.addColorStop(.52, rgba(r.col, al * .64));
+      g.addColorStop(.80, rgba(GRAY, al * .26));
+      g.addColorStop(1,   rgba(GRAY, 0));
+      ctx.strokeStyle = g;
+      ctx.lineWidth = r.w * (.5 + .5 * el);
+      ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(x2, y2); ctx.stroke();
+    }
+
+    /* ── ③ 星轨 streak：更细更长更快，末端拖尾（"星轨爆炸"）───── */
+    for(i = 0; i < streak.length; i++){
+      var sk = streak[i];
+      var kl = clamp01((blastE * sk.sp - sk.d) / (.66 - sk.d));
+      if(kl <= 0) continue;
+      var ke = easeOut(kl);
+      var klen = sk.len * R * (.35 + 1.15 * ke) * punch;
+      var ka = (1 - kl * .35) * .62 * br * fade * (p > BLAST0 ? 1 : 0);
+      if(ka <= .006) continue;
+      var ka2 = sk.a + (1 - ke) * .09;
+      var kx = cx + Math.cos(ka2) * klen + ppx * pxNear;
+      var ky = cy + Math.sin(ka2) * klen + ppy * pxNear;
+      var kg = ctx.createLinearGradient(cx, cy, kx, ky);
+      kg.addColorStop(0,   rgba(sk.col, ka * .20));
+      kg.addColorStop(.45, rgba(sk.col, ka));
+      kg.addColorStop(.88, rgba(sk.col, ka * .55));
+      kg.addColorStop(1,   rgba(sk.col, 0));
+      ctx.strokeStyle = kg;
+      ctx.lineWidth = sk.w * (.5 + .5 * ke);
+      ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(kx, ky); ctx.stroke();
+    }
+
+    /* ── ④ 爆散粒子 ────────────────────────────────────────────── */
+    var sparkBase = clamp01(p / BLAST0) * (1 - clamp01((p - BLAST0 - .12) / .32));
+    var sparkLife = Math.max(sparkBase, impulse);
+    if(sparkLife > .01){
+      for(i = 0; i < sparks.length; i++){
+        var s = sparks[i];
+        var slA = clamp01((blastE - s.d) / (1 - s.d));
+        var slB = clamp01((impulse - s.d * .6) / (1 - s.d * .6));
+        var sl = Math.max(slA * (sparkBase > .01 ? 1 : 0), slB);
+        if(sl <= 0) continue;
+        var se = easeOut(sl);
+        var sr = se * Math.hypot(W, H) * .68 * s.v;
+        var sa = (1 - se) * .58 * sparkLife * br * fade;
+        if(sa <= .004) continue;
+        ctx.fillStyle = rgba(s.col, sa);
+        ctx.beginPath();
+        ctx.arc(cx + Math.cos(s.a) * sr + ppx * pxNear, cy + Math.sin(s.a) * sr + ppy * pxNear,
+                s.r * (1 - se * .45), 0, 6.28318);
+        ctx.fill();
+      }
+    }
+
+    /* ── ⑤ 白热硬核（"真的炸"的核心；比上版更大更亮）─────────── */
+    var core = easeOut(clamp01((p - BLAST0 - .02) / .10));
+    var coreFade = 1 - clamp01((p - BLAST0 - .15) / .32);
+    var coreOn = Math.max(core * coreFade, impulse);
+    if(coreOn > .01){
+      var cr = Math.min(W, H) * (.42 * (1 + .28 * impulse));
+      var cg = ctx.createRadialGradient(cx, cy, 0, cx, cy, cr);
+      cg.addColorStop(0,   rgba(WHITE, .88 * coreOn * fade));
+      cg.addColorStop(.09, rgba(WHITE, .58 * coreOn * fade));
+      cg.addColorStop(.24, rgba(RED,  .68 * coreOn * fade));
+      cg.addColorStop(.56, rgba(DRED, .30 * coreOn * fade));
+      cg.addColorStop(1,   rgba(DRED, 0));
+      ctx.fillStyle = cg;
+      ctx.beginPath(); ctx.arc(cx, cy, cr, 0, 6.28318); ctx.fill();
+    }
+
+    /* ── ⑥ 常驻柔光 ────────────────────────────────────────────── */
+    var base = Math.max(charge * .12, blastE * .38) * fade;
+    if(base > .005){
+      var hr = Math.min(W, H) * (.05 + .10 * blastE) * br;
+      var hg = ctx.createRadialGradient(cx, cy, 0, cx, cy, hr);
+      hg.addColorStop(0,   rgba(RED,  (.18 + .34 * blastE) * base * 1.6));
+      hg.addColorStop(.45, rgba(DRED, .11 * base * 1.6));
+      hg.addColorStop(1,   rgba(DRED, 0));
+      ctx.fillStyle = hg;
+      ctx.beginPath(); ctx.arc(cx, cy, hr, 0, 6.28318); ctx.fill();
+    }
+
+    /* ── ⑦ 镜头光刺（贯穿式）──────────────────────────────────── */
+    var flareOn = Math.max(easeOut(clamp01((p - BLAST0) / .06)) * (1 - clamp01((p - BLAST0 - .08) / .28)), impulse);
+    if(flareOn > .01){
+      for(i = 0; i < flare.length; i++){
+        var fl = flare[i];
+        var flen = R * fl.len * (.55 + .45 * flareOn) * punch;
+        var fa = fl.a * flareOn * fade * br * .95;
+        if(fa <= .006) continue;
+        var fx2 = cx + Math.cos(fl.ang) * flen, fy2 = cy + Math.sin(fl.ang) * flen;
+        var fg = ctx.createLinearGradient(cx, cy, fx2, fy2);
+        fg.addColorStop(0,   rgba(WHITE, fa));
+        fg.addColorStop(.22, rgba(RED,   fa * .72));
+        fg.addColorStop(.62, rgba(DRED,  fa * .28));
+        fg.addColorStop(1,   rgba(DRED, 0));
+        ctx.strokeStyle = fg;
+        ctx.lineWidth = fl.w * (.5 + .5 * flareOn);
+        ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(fx2, fy2); ctx.stroke();
+        var bx2 = cx - Math.cos(fl.ang) * flen * .72, by2 = cy - Math.sin(fl.ang) * flen * .72;
+        var bg2 = ctx.createLinearGradient(cx, cy, bx2, by2);
+        bg2.addColorStop(0,   rgba(WHITE, fa * .55));
+        bg2.addColorStop(.30, rgba(RED,   fa * .34));
+        bg2.addColorStop(1,   rgba(DRED, 0));
+        ctx.strokeStyle = bg2;
+        ctx.lineWidth = fl.w * .6 * (.5 + .5 * flareOn);
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(bx2, by2); ctx.stroke();
+      }
+    }
+
+    /* ── ⑧ 冲击环组（4 环错峰）────────────────────────────────── */
+    var ringT = clamp01((p - BLAST0 - .01) / .24);
+    for(i = 0; i < rings.length; i++){
+      var rg = rings[i];
+      var ra0 = ringT > 0 ? clamp01((ringT - rg.delay) / (1 - rg.delay)) : 0;
+      var raA = (ra0 > 0 && ra0 < 1) ? (1 - ra0) : 0;
+      var raB = clamp01((impulse - rg.delay) / (1 - rg.delay));
+      raB = raB > 0 ? (1 - raB) : 0;
+      var use = Math.max(raA, raB);
+      if(use <= .01) continue;
+      var prog = 1 - use;
+      var rr = Math.min(W, H) * (.045 + easeOut(prog) * rg.spread * punch);
+      ctx.strokeStyle = rgba(RED, use * rg.a * fade);
+      ctx.lineWidth = rg.w * (.35 + use * .65);
+      ctx.beginPath(); ctx.arc(cx, cy, rr, 0, 6.28318); ctx.stroke();
+    }
+
+    ctx.restore();
   }
-  function loop(){ raf = 0; if(active){ drawLines(); raf = requestAnimationFrame(loop); } }
-  function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+
+  function wakeLoop(now){
+    wakeRaf = 0;
+    if(reduced){ wake = 0; return; }
+    if(!lastWakeT) lastWakeT = now;
+    var dt = Math.min(64, now - lastWakeT); lastWakeT = now;
+    wake -= dt / 520;
+    if(wake < 0) wake = 0;
+    if(!raf) raf = requestAnimationFrame(loop);
+    if(wake > 0) wakeRaf = requestAnimationFrame(wakeLoop);
+    else lastWakeT = 0;
+  }
+  function poke(){
+    if(reduced) return;
+    var now = performance.now();
+    if(now - lastPoke < 260) return;
+    lastPoke = now;
+    wake = 1; lastWakeT = 0;
+    var st = document.getElementById('captionStage');
+    if(st){
+      st.classList.remove('poke');
+      void st.offsetWidth;
+      st.classList.add('poke');
+      setTimeout(function(){ st.classList.remove('poke'); }, 560);
+    }
+    if(!wakeRaf) wakeRaf = requestAnimationFrame(wakeLoop);
+    if(!raf) raf = requestAnimationFrame(loop);
+  }
+  addEventListener('pointerdown', function(ev){
+    if(document.body.classList.contains('intro-lock')) return;
+    if(!vis || sp <= 0) return;
+    if(sp < BLAST0) return;                    /* 蓄势期点击不做任何事 */
+    if(Math.abs(ev.clientY - innerHeight * .5) < innerHeight * .50) poke();
+  }, {passive:true});
+  /* 鼠标视差：全屏跟随，缓动逼近（电影镜头感） */
+  addEventListener('pointermove', function(ev){
+    ptx = (ev.clientX / innerWidth - .5) * 26;
+    pty = (ev.clientY / innerHeight - .5) * 20;
+    if(!raf && running && vis) raf = requestAnimationFrame(loop);
+  }, {passive:true});
+  /* 触屏：用陀螺仪感的轻微位移替代（手指抬起时回正） */
+  addEventListener('deviceorientation', function(ev){
+    if(ev.gamma == null || ev.beta == null) return;
+    ptx = Math.max(-26, Math.min(26, ev.gamma * .55));
+    pty = Math.max(-20, Math.min(20, (ev.beta - 45) * .45));
+  }, {passive:true});
+
+  function loop(now){
+    raf = 0;
+    if(!running || !vis) return;
+    paint(now || performance.now());
+    raf = requestAnimationFrame(loop);
+  }
+
+  function sectionTop(){
+    var y = 0, el = ch;
+    while(el){ y += el.offsetTop; el = el.offsetParent; }
+    return y;
+  }
+
   function onScroll(){
-    var r = ch.getBoundingClientRect(), vh = innerHeight;
-    var inView = !(r.top > vh || r.bottom < 0);
-    if(!inView){
-      if(active){ active = false; cv.style.opacity = 0; if(ink) ink.style.opacity = 0;
-        if(star) star.style.opacity = 0; if(bg) bg.style.opacity = 0; }
+    var vh = innerHeight;
+    var top = sectionTop();
+    var track = Math.max(1, ch.offsetHeight - vh);
+    var y = scrollY - top;
+    vis = !(y > track || y < -vh);
+    if(!vis){
+      running = false;
+      cv.style.opacity = 0;
+      if(bg) bg.style.opacity = 0;
       return;
     }
-    var p = clamp((-r.top)/((r.height - vh) || 1), 0, 1);
+    var p = clamp01(y / track);
     sp = p;
-    if(!active){ active = true; if(!reduced) raf = requestAnimationFrame(loop); else drawLines(); }
-    cv.style.opacity = Math.min(1, p*6).toFixed(3);
-    if(bg) bg.style.opacity = (p < .9 ? Math.min(1, p*5) : clamp((1-p)/.1, 0, 1)).toFixed(3);
-    if(star){
-      var s = 1 + p*17, rot = p*360;
-      star.style.transform = 'translate(-50%,-50%) perspective(800px) scale(' + s.toFixed(2) +
-        ') rotateY(' + rot.toFixed(1) + 'deg) rotateZ(' + (rot/6).toFixed(1) + 'deg)';
-      star.style.opacity = (p < .5 ? 1 : clamp(1-(p-.5)*4, 0, 1)).toFixed(3);
-    }
-    if(ink){
-      var iw = Math.min(W,H)*.16*(1 + p*14);
-      ink.style.width = ink.style.height = iw + 'px';
-      ink.style.opacity = (p > .08 ? clamp((.92-p)*4, 0, 1) : 0).toFixed(3);
+
+    var fade = p <= FADE0 ? 1 : clamp01(1 - (p - FADE0) / (FADE1 - FADE0));
+    /* 一击到底：进入即可见，不留空白缓冲 */
+    var op = easeOut(clamp01(p / .06)) * fade;
+    if(p <= 0) op = 0;
+    var ops = op.toFixed(3);
+    cv.style.opacity = ops;
+    if(bg) bg.style.opacity = ops;
+    if(bg) bg.style.filter = 'brightness(' +
+      (1 + .40 * easeOut(clamp01((p - BLAST0) / (BLAST1 - BLAST0)))).toFixed(3) + ')';
+
+    if(reduced){ running = false; paint(performance.now()); return; }
+
+    running = p > 0 && fade > 0;
+    if(running){ if(!raf) raf = requestAnimationFrame(loop); }
+    else {
+      sp = 0;
+      ctx.clearRect(0, 0, W, H);
+      cv.style.opacity = 0;
+      if(bg) bg.style.opacity = 0;
     }
   }
-  resize();
-  addEventListener('resize', function(){ resize(); onScroll(); }, {passive:true});
+
+  build();
+  addEventListener('resize', function(){ build(); onScroll(); }, {passive:true});
   addEventListener('scroll', onScroll, {passive:true});
   onScroll();
 })();
 
-/* ── 9. 星爆逐句标题 ── */
+/* ── 9. 星轨文案 ·「四句依次淡入淡出」（电影分镜式推进） ──────────
+   四句：先动起来 / 保持好奇 / 保持喜欢 / 往前走
+   中英对译，**英文字号小于中文字号**（.caption-sub 已相应改小）。
+
+   ⚠ 与上一版（快速闪切 90ms）的根本区别：这一版**每句都要看清**。
+     采用"淡入 → 停留 → 淡出"的三段式，每句占约 0.165 行程：
+       淡入 .05 / 停留 .065 / 淡出 .05
+     过渡用 opacity 交叉淡入淡出（不用 scale 抖动），像电影换镜。
+   ──────────────────────────────────────────────────────────────── */
 (function(){
   var stage = document.getElementById('captionStage');
   var cap = document.getElementById('caption');
   var title = document.getElementById('capTitle');
   var sub = document.getElementById('capSub');
+  var countEl = document.getElementById('capCount');
   var ch = document.getElementById('chapters');
   if(!stage || !cap || !ch) return;
-  var data = [{t:'先动起来',s:'Move first'},{t:'保持喜欢',s:'Keep listening'},
-              {t:'保持好奇',s:'Stay curious'},{t:'往前走',s:'Keep going'}];
-  var idx = -1, raf = 0;
+
+  /* 用户指定的四句。中英对译，英文作为副行（字号更小）。 */
+  var data = [
+    { t:'先动起来', s:'Move first' },
+    { t:'保持好奇', s:'Stay curious' },
+    { t:'保持喜欢', s:'Stay in love' },
+    { t:'往前走',   s:'Keep going' }
+  ];
+  /* 与第 8 节共用相位常量 */
+  var BLAST0=.14, WORD0=.26, WORD1=.92, FADE0=.92;
+  var raf = 0, idx = -1, lastOp = -1;
+
+  function sectionTop(){
+    var y = 0, el = ch;
+    while(el){ y += el.offsetTop; el = el.offsetParent; }
+    return y;
+  }
+  function pad2(n){ return (n<10?'0':'')+n; }
+  function clamp01(x){ return x<0?0:(x>1?1:x); }
+
+  function setText(i){
+    if(i === idx) return; idx = i;
+    title.textContent = data[i].t;
+    if(sub) sub.textContent = data[i].s;
+    if(countEl) countEl.textContent = pad2(i+1) + ' / ' + pad2(data.length);
+  }
+
   function run(){
     raf = 0;
-    var r = ch.getBoundingClientRect(), vh = innerHeight;
-    if(r.top > vh || r.bottom < 0){ stage.classList.remove('on'); return; }
+    var vh = innerHeight;
+    var top = sectionTop(), track = Math.max(1, ch.offsetHeight - vh);
+    var y = scrollY - top;
+    if(y > track || y < -vh){ stage.classList.remove('on'); return; }
+    var p = Math.min(Math.max(y / track, 0), .999);
+
+    var enter = Math.min(1, Math.max(0, p / .04));
+    var exit  = p <= FADE0 ? 1 : Math.min(1, Math.max(0, 1 - (p - FADE0) / (1 - FADE0)));
+    var stageOp = Math.min(enter, exit);
+    if(stageOp <= 0){ stage.classList.remove('on'); stage.style.opacity = 0; return; }
     stage.classList.add('on');
-    var p = Math.min(Math.max((-r.top)/((r.height - vh) || 1), 0), .999);
-    var i = Math.floor(p * data.length);
-    if(i === idx) return; idx = i;
-    cap.classList.remove('visible');
-    setTimeout(function(){
-      title.textContent = data[i].t; sub.textContent = data[i].s;
-      cap.classList.add('visible');
-    }, 260);
+    stage.style.opacity = stageOp.toFixed(3);
+
+    /* 点击提示：起爆后才出现 */
+    var hintEl = document.getElementById('capHint');
+    if(hintEl) hintEl.style.opacity = (p >= BLAST0 && exit >= 1) ? '1' : '0';
+
+    /* 顶栏细线：起爆同一刻从 0 冲到满 */
+    var rule = document.getElementById('capRule');
+    if(rule){
+      var rp = Math.min(1, Math.max(0, (p - BLAST0) / .12));
+      rule.style.transform = 'scaleX(' + (rp * rp * (3 - 2 * rp)).toFixed(3) + ')';
+      rule.style.opacity = (p < BLAST0 ? 0 : 1).toString();
+    }
+
+    /* ── 四句依次淡入淡出 ────────────────────────────────────────
+       seg = 每句占用的行程宽度；local = 该句内的局部进度 0→1
+       0→.30 淡入 | .30→.70 停留 | .70→1 淡出
+       相邻两句的淡出/淡入区间相邻 → 自然交叉，像电影换镜。      */
+    var seg = (WORD1 - WORD0) / data.length;
+    var local, i, op;
+    if(p < WORD0){
+      /* 起爆前：先摆第一句但完全透明（避免空白，也避免抢屏息） */
+      setText(0);
+      op = 0;
+    } else {
+      i = Math.min(data.length - 1, Math.floor((p - WORD0) / seg));
+      setText(i);
+      local = clamp01(((p - WORD0) - i * seg) / seg);
+      if(local < .30)      op = local / .30;             /* 淡入 */
+      else if(local < .70) op = 1;                       /* 停留 */
+      else                 op = 1 - (local - .70) / .30; /* 淡出 */
+      /* 用平滑曲线让首尾更柔（"淡入淡出的感觉"） */
+      op = op * op * (3 - 2 * op);
+    }
+    var opt = op.toFixed(3);
+    if(opt !== lastOp){ cap.style.opacity = opt; lastOp = opt; }
   }
+
   addEventListener('scroll', function(){ if(!raf) raf = requestAnimationFrame(run); }, {passive:true});
   addEventListener('resize', run, {passive:true});
   run();
